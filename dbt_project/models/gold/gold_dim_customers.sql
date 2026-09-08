@@ -26,7 +26,7 @@ gold_dimension as (
         end as is_valid_email,
         
         case 
-            when upper(country) = 'USA' then 'Domestic'
+            when upper(country) = 'ARGENTINA' then 'Domestic'
             else 'International'
         end as market_segment,
         

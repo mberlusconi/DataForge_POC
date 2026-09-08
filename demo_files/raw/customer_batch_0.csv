@@ -1,0 +1,4 @@
+id,first_name,last_name,email,phone,country
+1,Ariel,Ortega,ariel.o@example.com,555-0192,USA
+2,Enzo,Francescoli,enzo.f@example.com,555-0193,Argentina
+3,German,Burgos,german.b@example.com,555-0194,Spain

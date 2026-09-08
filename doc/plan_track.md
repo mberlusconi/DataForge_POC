@@ -18,8 +18,8 @@ This repository contains the Proof of Concept (POC) for an end-to-end modern dat
 ## Project Roadmap & Tracking
 
 ### Phase 1: Base Infrastructure & Snowflake Setup
-* [ ] Initialize GitHub repository structure for Terraform, dbt, Dagster, and GitHub Actions.
-* [ ] Define Terraform HCL scripts to provision Snowflake infrastructure:
+* [x] Initialize GitHub repository structure for Terraform, dbt, Dagster, and GitHub Actions.
+* [x] Define Terraform HCL scripts to provision Snowflake infrastructure:
   * Databases (`DEV_DB`, `UAT_DB`, `PROD_DB`).
   * Schemas (`BRONZE`, `SILVER`, `GOLD`).
   * Access roles, service accounts, and Virtual Warehouses (`COMPUTE_WH`).
@@ -29,19 +29,19 @@ This repository contains the Proof of Concept (POC) for an end-to-end modern dat
 ---
 
 ### Phase 2: Ingestion & Medallion Layer Development (dbt)
-* [ ] Initialize and configure `dbt Core` project connecting to Snowflake.
-* [ ] **Bronze Layer:** Implement raw landing tables and script execution for `COPY INTO` from Internal Stage.
-* [ ] **Silver Layer:** Implement dbt models for data cleaning, type casting, standardization, and deduplication.
-* [ ] **Gold Layer:** Implement dbt models for dimensional modeling (Facts/Dimensions) and business aggregations.
-* [ ] Implement data quality tests (`not_null`, `unique`, referential integrity) and definitions in `schema.yml`.
+* [x] Initialize and configure `dbt Core` project connecting to Snowflake.
+* [x] **Bronze Layer:** Implement raw landing tables and script execution for `COPY INTO` from Internal Stage.
+* [x] **Silver Layer:** Implement dbt models for data cleaning, type casting, standardization, and deduplication.
+* [x] **Gold Layer:** Implement dbt models for dimensional modeling (Facts/Dimensions) and business aggregations.
+* [x] Implement data quality tests (`not_null`, `unique`, referential integrity) and definitions in `schema.yml`.
 
 ---
 
 ### Phase 3: Workflow Orchestration with Dagster
-* [ ] Initialize Dagster environment and install `dagster-dbt`.
-* [ ] Implement Ingestion Asset/Op to handle raw file loading (`PUT` into Internal Stage -> `COPY INTO` Bronze).
-* [ ] Configure dbt Software-Defined Assets (SDA) to trigger automatically upon Bronze load completion.
-* [ ] Validate end-to-end pipeline executions using the Dagster UI.
+* [x] Initialize Dagster environment and install `dagster-dbt`.
+* [x] Implement Ingestion Asset/Op to handle raw file loading (`PUT` into Internal Stage -> `COPY INTO` Bronze).
+* [x] Configure dbt Software-Defined Assets (SDA) to trigger automatically upon Bronze load completion.
+* [x] Validate end-to-end pipeline executions using the Dagster UI.
 
 ---
 
