@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: landing_raw
+    database: POC_MEDALLION_CICD
+    schema: BRONZE_DEV
+    tables:
+      - name: raw_customers
+        description: "Table or staging of raw clients loaded from landing"

@@ -1,0 +1,11 @@
+id,first_name,last_name,email,phone,country
+101,Angel,Labruna,angel.labruna@example.com,555-0101,Argentina
+102,Norberto,Alonso,norberto.a@example.com,555-0102,France
+103,Ramon,Medina Bello,ramon.mb@example.com,555-0103,Germany
+104,Ramon,Diaz,ramon.diaz@example.com,555-0104,Argentina
+105,Amadeo,Carrizo,amadeo.carrizo@example.com,555-0105,Argentina
+106,Daniel,Passarella,daniel.passarella@example.com,555-0106,Argentina
+107,Adolfo,Pedernera,adolfo.pedernera@example.com,555-0107,Argentina
+108,Leonardo,Astrada,leonardo.astrada@example.com,555-0108,Argentina
+109,Enzo,Perez,enzo.perez@example.com,555-0109,Argentina
+110,Marcelo,Salas,marcelo.salas@example.com,555-0110,Chile

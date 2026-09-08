@@ -1,0 +1,29 @@
+
+name: 'dbt_CICD_medallion'
+version: '1.0.0'
+
+profile: 'dataforge_poc'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+
+models:
+  dbt_CICD_medallion:
+    bronze:
+      +schema: BRONZE_DEV
+      +materialized: table
+    silver:
+      +schema: SILVER_DEV
+      +materialized: view
+    gold:
+      +schema: GOLD_DEV
+      +materialized: table

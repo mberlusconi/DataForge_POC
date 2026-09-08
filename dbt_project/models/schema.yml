@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  # ==========================================
+  # BRONZE LAYER
+  # ==========================================
+  - name: stg_bronze_customers
+    description: "Staging table for raw customer data ingested from Snowflake Stage."
+    columns:
+      - name: customer_id
+        description: "Raw primary key identifier."
+        tests:
+          - not_null
+
+  # ==========================================
+  # SILVER LAYER
+  # ==========================================
+  - name: silver_customers
+    description: "Cleaned, deduplicated, and typed customer records."
+    columns:
+      - name: customer_id
+        description: "Unique customer business key."
+        tests:
+          - unique
+          - not_null
+      - name: email
+        description: "Standardized customer email address."
+        tests:
+          - not_null
+
+  # ==========================================
+  # GOLD LAYER
+  # ==========================================
+  - name: gold_dim_customers
+    description: "Conformed Customer Dimension table optimized for analytics."
+    columns:
+      - name: customer_sk
+        description: "Surrogate key generated via MD5/Hash for the dimension."
+        tests:
+          - unique
+          - not_null
+      - name: market_segment
+        description: "Business market segment based on customer country."
+        tests:
+          - accepted_values:
+             arguments:
+               values: ['Domestic', 'International']

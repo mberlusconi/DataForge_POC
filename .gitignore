@@ -1,0 +1,15 @@
+# Entornos virtuales y caché de Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+*terraform/*.tfvars 
+.terraform/
+.terraform.*
+
+#Keys
+*.p8
