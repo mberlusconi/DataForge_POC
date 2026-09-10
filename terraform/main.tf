@@ -52,9 +52,11 @@ resource "snowflake_stage" "internal_stage" {
   depends_on = [snowflake_schema.medallion_schemas]
 }
 
-#Permissions
+# =====================================================
+# PERMISSIONS
+# =====================================================
 
-# Grant USAGE en database (igual, solo uno)
+# Database usage
 resource "snowflake_grant_privileges_to_account_role" "developer_db_usage" {
   privileges        = ["USAGE"]
   account_role_name = "DBT_PIPELINE_DEVELOPER"
@@ -64,7 +66,7 @@ resource "snowflake_grant_privileges_to_account_role" "developer_db_usage" {
   }
 }
 
-# Grants USAGE en TODOS los schemas (dinámico)
+# Schema usage for all schemas
 resource "snowflake_grant_privileges_to_account_role" "developer_schema_usage" {
   for_each = snowflake_schema.medallion_schemas
 
@@ -75,7 +77,7 @@ resource "snowflake_grant_privileges_to_account_role" "developer_schema_usage" {
   }
 }
 
-# Grants READ en TODOS los stages (dinámico)
+# Stage read for all stages
 resource "snowflake_grant_privileges_to_account_role" "developer_stage_read" {
   for_each = snowflake_stage.internal_stage
 
@@ -84,5 +86,32 @@ resource "snowflake_grant_privileges_to_account_role" "developer_stage_read" {
   on_schema_object {
     object_type = "STAGE"
     object_name = "${snowflake_database.poc_medallion_cicd.name}.BRONZE_${each.key}.${each.value.name}"
+  }
+}
+# Grant SELECT on current tables
+resource "snowflake_grant_privileges_to_account_role" "developer_all_tables" {
+  for_each = snowflake_schema.medallion_schemas
+
+  privileges        = ["SELECT"]
+  account_role_name = "DBT_PIPELINE_DEVELOPER"
+  on_schema_object {
+    all {
+      object_type_plural = "TABLES"
+      in_schema           = "${snowflake_database.poc_medallion_cicd.name}.${each.value.name}"
+    }
+  }
+}
+
+# Grant SELECT current views
+resource "snowflake_grant_privileges_to_account_role" "developer_all_views" {
+  for_each = snowflake_schema.medallion_schemas
+
+  privileges        = ["SELECT"]
+  account_role_name = "DBT_PIPELINE_DEVELOPER"
+  on_schema_object {
+    all {
+      object_type_plural = "VIEWS"
+      in_schema           = "${snowflake_database.poc_medallion_cicd.name}.${each.value.name}"
+    }
   }
 }
