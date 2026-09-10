@@ -28,25 +28,16 @@ variable "database_name" {
 variable "environments" {
   description = "List of target environments"
   type        = list(string)
-  default     = ["DEV"]
-# default     = ["DEV", "UAT", "PROD"]
+  default     = ["DEV", "UAT", "PROD"]
 }
 
 variable "layers" {
   description = "List of Medallion architecture layers"
   type        = list(string)
-  default     = ["BRONZE"]
-  #default     = ["BRONZE", "SILVER", "GOLD"]
+  default     = ["BRONZE", "SILVER", "GOLD"]
 }
 
 variable "snowflake_private_key_path" {
   type        = string
   description = "Path to Snowflake service account private key"
 }
-
-/*variable "snowflake_private_key_passphrase" {
-  type        = string
-  sensitive   = true
-  description = "Passphrase for private key"
-}
-*/
