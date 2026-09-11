@@ -88,14 +88,24 @@ jobs:
         run: |
           sqlfluff lint dbt_project/models --config .sqlfluff
 
-      - name: Download Production Manifest Artifact
-        uses: dawidd6/action-download-artifact@v6
-        continue-on-error: true
-        with:
-          workflow: cd.yml
-          name: dbt-production-manifest
-          path: dbt_project
-          search_artifacts: true          
+      - name: Download Production Manifest via GitHub API
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Looking for the dbt-production-manifest artifact..."
+          
+          # Query the API exclusively by artifact name
+          ARTIFACT_URL=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/artifacts?name=dbt-production-manifest --jq '.artifacts[0].archive_download_url' || echo "")
+          
+          if [ -z "$ARTIFACT_URL" ] || [ "$ARTIFACT_URL" == "null" ]; then
+            echo "⚠️ No artifact found in the API."
+          else
+            echo "✅ Download URL found. Downloading..."
+            gh api $ARTIFACT_URL > manifest.zip
+            unzip -o manifest.zip -d dbt_project/
+            echo "Checking File:"
+            ls -la dbt_project/manifest.json
+          fi
 
       - name: Run dbt Slim CI
         id: dbt_run
@@ -105,7 +115,7 @@ jobs:
             echo "Comparison manifest found. Running Slim CI (state:modified+)..."
             dbt build --select state:modified+ --target ci --state ./ --profiles-dir .
             echo "IMPACTED_MODELS<<EOF" >> $GITHUB_ENV
-            dbt ls --select state:modified+ --output name --state ./ --profiles-dir . >> $GITHUB_ENV
+            dbt ls --select state:modified+ --output name --state ./ --profiles-dir . --quiet >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
           else
             echo "No prior manifest.json found. Executing full build on ephemeral schema..."
