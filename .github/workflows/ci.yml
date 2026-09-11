@@ -92,18 +92,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Buscando el artefacto dbt-production-manifest..."
+          echo "Looking for the dbt-production-manifest artifact..."
           
-          # Consulta la API buscando exclusivamente por el nombre del artefacto
+          # Query the API exclusively by artifact name
           ARTIFACT_URL=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/artifacts?name=dbt-production-manifest --jq '.artifacts[0].archive_download_url' || echo "")
           
           if [ -z "$ARTIFACT_URL" ] || [ "$ARTIFACT_URL" == "null" ]; then
-            echo "⚠️ No se encontró el artefacto en la API."
+            echo "⚠️ No artifact found in the API."
           else
-            echo "✅ URL de descarga encontrada. Descargando..."
+            echo "✅ Download URL found. Downloading..."
             gh api $ARTIFACT_URL > manifest.zip
             unzip -o manifest.zip -d dbt_project/
-            echo "Verificando archivo descomprimido:"
+            echo "Checking File:"
             ls -la dbt_project/manifest.json
           fi
 
