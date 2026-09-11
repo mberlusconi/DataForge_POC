@@ -15,7 +15,7 @@ env:
   PR_SCHEMA: PR_BUILD_${{ github.event.number }}
 
 jobs:
-  # 1. Limpieza del esquema efímero al cerrar el PR
+  # 1. Cleanup ephemeral PR schema in Snowflake when PR is closed
   cleanup_pr_schema:
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
@@ -52,12 +52,12 @@ jobs:
           )
           cursor = conn.cursor()
           schema_name = os.environ['PR_SCHEMA']
-          print(f'Eliminando esquema efímero: {schema_name}')
+          print(f'Dropping ephemeral schema: {schema_name}')
           cursor.execute(f'DROP SCHEMA IF EXISTS {schema_name};')
           conn.close()
           "
 
-  # 2. Validación en PR abierto/actualizado
+  # 2. Validation in open/update PR
   slim_ci:
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
@@ -87,14 +87,74 @@ jobs:
         run: |
           sqlfluff lint dbt_project/models --config .sqlfluff
 
-
       - name: Run dbt Slim CI
+        id: dbt_run
         run: |
           cd dbt_project
           if [ -f "./manifest.json" ]; then
-            echo "Manifest de comparación encontrado. Ejecutando Slim CI (state:modified+)..."
+            echo "Comparison manifest found. Running Slim CI (state:modified+)..."
             dbt build --select state:modified+ --target ci --state ./ --profiles-dir .
+            echo "IMPACTED_MODELS<<EOF" >> $GITHUB_ENV
+            dbt ls --select state:modified+ --output name --state ./ --profiles-dir . >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
           else
-            echo "No se encontró manifest.json previo. Ejecutando build completo en el esquema efímero..."
+            echo "No prior manifest.json found. Executing full build on ephemeral schema..."
             dbt build --target ci --profiles-dir .
+            echo "IMPACTED_MODELS=Full build executed (no base manifest available for lineage comparison)." >> $GITHUB_ENV
           fi
+
+      - name: Post PR Comment with Semantic Impact
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = './dbt_project/target/run_results.json';
+            
+            if (!fs.existsSync(path)) {
+              console.log('No run_results.json found.');
+              return;
+            }
+
+            const runResults = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const results = runResults.results || [];
+
+            let rows = results.map(res => {
+              const statusEmoji = res.status === 'success' || res.status === 'pass' ? '✅' : '❌';
+              const nodeType = res.unique_id.split('.')[0].toUpperCase();
+              const name = res.unique_id.split('.').slice(-1)[0];
+              const time = res.execution_time ? `${res.execution_time.toFixed(2)}s` : 'N/A';
+              return `| ${statusEmoji} **${res.status.toUpperCase()}** | \`${nodeType}\` | \`${name}\` | ${time} |`;
+            }).join('\n');
+
+            const rawImpacted = process.env.IMPACTED_MODELS || '';
+            const impactedList = rawImpacted
+              .split('\n')
+              .filter(line => line.trim() !== '')
+              .map(model => `- \`${model.trim()}\``)
+              .join('\n');
+
+            const body = `### 📊 dbt Slim CI - PR Semantic Impact Analysis
+
+            #### ⛓️ Downstream Lineage Impact
+            The following models and tests were identified as modified or directly impacted downstream:
+            ${impactedList || '_No downstream models impacted._'}
+
+            ---
+
+            #### 🛠️ Execution Results
+            | Status | Resource Type | Model / Test Name | Execution Time |
+            | :---: | :---: | :--- | :---: |
+            ${rows}
+
+            * **Target Test Schema:** \`${process.env.PR_SCHEMA}\`
+            * **Total Resources Processed:** ${results.length}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
