@@ -91,4 +91,10 @@ jobs:
       - name: Run dbt Slim CI
         run: |
           cd dbt_project
-          dbt build --select state:modified+ --target ci --state ./ --profiles-dir .
+          if [ -f "./manifest.json" ]; then
+            echo "Manifest previo encontrado. Ejecutando Slim CI (state:modified+)..."
+            dbt build --select state:modified+ --target ci --state ./ --profiles-dir .
+          else
+            echo "No se encontró manifest previo. Ejecutando build completo en esquema CI..."
+            dbt build --target ci --profiles-dir .
+          fi
