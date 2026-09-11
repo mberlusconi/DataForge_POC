@@ -92,9 +92,9 @@ jobs:
         run: |
           cd dbt_project
           if [ -f "./manifest.json" ]; then
-            echo "Manifest previo encontrado. Ejecutando Slim CI (state:modified+)..."
+            echo "Manifest de comparación encontrado. Ejecutando Slim CI (state:modified+)..."
             dbt build --select state:modified+ --target ci --state ./ --profiles-dir .
           else
-            echo "No se encontró manifest previo. Ejecutando build completo en esquema CI..."
+            echo "No se encontró manifest.json previo. Ejecutando build completo en el esquema efímero..."
             dbt build --target ci --profiles-dir .
           fi
