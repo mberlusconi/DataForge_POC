@@ -38,11 +38,11 @@ def reset_environment(context: OpExecutionContext, config: ResetEnvConfig):
     # TRUNCATE TABLE IF EXISTS POC_MEDALLION_CICD.GOLD_{env}.GOLD_COUNTRY_METRICS;
     # """
     RESET_SQL = f"""
-    TRUNCATE TABLE IF EXISTS POC_MEDALLION_CICD.BRONZE_{ENV}.RAW_CUSTOMERS;
-    TRUNCATE TABLE IF EXISTS POC_MEDALLION_CICD.BRONZE_{ENV}.STG_BRONZE_CUSTOMERS;
-    REMOVE @POC_MEDALLION_CICD.BRONZE_{ENV}.RAW_FILES_STAGE;
-    TRUNCATE TABLE IF EXISTS POC_MEDALLION_CICD.GOLD_{ENV}.GOLD_DIM_CUSTOMERS;
-    TRUNCATE TABLE IF EXISTS POC_MEDALLION_CICD.GOLD_{ENV}.GOLD_COUNTRY_METRICS;
+    TRUNCATE TABLE IF EXISTS POC_MEDALLION_CICD.BRONZE_{env}.RAW_CUSTOMERS;
+    TRUNCATE TABLE IF EXISTS POC_MEDALLION_CICD.BRONZE_{env}.STG_BRONZE_CUSTOMERS;
+    REMOVE @POC_MEDALLION_CICD.BRONZE_{env}.RAW_FILES_STAGE;
+    TRUNCATE TABLE IF EXISTS POC_MEDALLION_CICD.GOLD_{env}.GOLD_DIM_CUSTOMERS;
+    TRUNCATE TABLE IF EXISTS POC_MEDALLION_CICD.GOLD_{env}.GOLD_COUNTRY_METRICS;
     """
 
     key_path = os.getenv(
@@ -61,7 +61,7 @@ def reset_environment(context: OpExecutionContext, config: ResetEnvConfig):
     )
 
     cursor = conn.cursor()
-    for statement in reset_sql.strip().split(";"):
+    for statement in RESET_SQL.strip().split(";"):
         stmt = statement.strip()
         if not stmt:
             continue

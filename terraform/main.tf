@@ -204,4 +204,5 @@ resource "snowflake_grant_privileges_to_account_role" "developer_stage_write" {
     object_type = "STAGE"
     object_name = "${snowflake_database.poc_medallion_cicd.name}.BRONZE_${each.key}.${each.value.name}"
   }
+  depends_on = [snowflake_grant_privileges_to_account_role.developer_stage_read]
 }
