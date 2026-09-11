@@ -91,5 +91,4 @@ jobs:
       - name: Run dbt Slim CI
         run: |
           cd dbt_project
-          dbt seed --target ci--profiles-dir .
           dbt build --select state:modified+ --target ci --state ./ --profiles-dir .
