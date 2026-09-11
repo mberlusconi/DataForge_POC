@@ -78,9 +78,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install dbt-snowflake sqlfluff sqlfluff-templater-dbt cryptography
 
+      - name: Install dbt Packages
+        run: |
+          cd dbt_project
+          dbt deps --profiles-dir .
+
       - name: Run SQLFluff Linting
         run: |
-          sqlfluff lint dbt_project/models --dialect snowflake
+          sqlfluff lint dbt_project/models --config .sqlfluff
+
 
       - name: Run dbt Slim CI
         run: |
