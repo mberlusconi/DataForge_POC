@@ -1,0 +1,42 @@
+dataforge_poc:
+  target: dev_jwt
+  outputs:
+    # 1. Local environment using JWT authentication
+    dev_jwt:
+      type: snowflake
+      account: mu75918.us-east-2.aws
+      user: SVC_DBT_PIPELINE_DEPLOY
+      authenticator: jwt
+      private_key_path: "C:\\Martin\\Projects\\DataForge_POC\\terraform\\svc_dbt_pipeline_deploy_key.p8"
+      private_key_passphrase: ""
+      role: DBT_PIPELINE_DEPLOYER
+      warehouse: COMPUTE_WH
+      database: POC_MEDALLION_CICD
+      schema: BRONZE_DEV
+      threads: 2
+      client_session_keep_alive: True
+
+    # 2. Local environment using external browser authentication
+    dev:
+      type: snowflake
+      account: mu75918.us-east-2.aws
+      user: MARTIN.BERLUSCONI@ALLATA.COM
+      authenticator: externalbrowser
+      role: DBT_PIPELINE_DEVELOPER
+      warehouse: COMPUTE_WH
+      database: POC_MEDALLION_CICD
+      schema: BRONZE_DEV
+      threads: 2
+      client_session_keep_alive: True
+
+    # 3. Environment for GitHub Actions (Slim CI)
+    ci:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      private_key_raw: "{{ env_var('SNOWFLAKE_PRIVATE_KEY') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+      database: POC_MEDALLION_CICD
+      schema: "{{ env_var('PR_SCHEMA') }}"
+      threads: 4

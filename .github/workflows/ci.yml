@@ -1,0 +1,89 @@
+name: Slim CI - Pull Request Validation
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened, closed ]
+
+env:
+  SNOWFLAKE_ACCOUNT: ${{ vars.SNOWFLAKE_ACCOUNT }}
+  SNOWFLAKE_USER: ${{ vars.SNOWFLAKE_USER }}
+  SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_ROLE }}
+  SNOWFLAKE_WAREHOUSE: ${{ vars.SNOWFLAKE_WAREHOUSE }}
+  SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+  SNOWFLAKE_DATABASE: POC_MEDALLION_CICD
+  PR_SCHEMA: PR_BUILD_${{ github.event.number }}
+
+jobs:
+  # 1. Limpieza del esquema efímero al cerrar el PR
+  cleanup_pr_schema:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Snowflake Connector
+        run: pip install snowflake-connector-python cryptography
+
+      - name: Drop Ephemeral PR Schema in Snowflake
+        run: |
+          python -c "
+          import snowflake.connector, os
+          from cryptography.hazmat.primitives import serialization
+
+          p_key = os.environ['SNOWFLAKE_PRIVATE_KEY'].encode()
+          private_key = serialization.load_pem_private_key(p_key, password=None)
+          pk_bytes = private_key.private_bytes(
+              encoding=serialization.Encoding.DER,
+              format=serialization.PrivateFormat.PKCS8,
+              encryption_algorithm=serialization.NoEncryption()
+          )
+
+          conn = snowflake.connector.connect(
+              user=os.environ['SNOWFLAKE_USER'],
+              private_key=pk_bytes,
+              account=os.environ['SNOWFLAKE_ACCOUNT'],
+              warehouse=os.environ['SNOWFLAKE_WAREHOUSE'],
+              database=os.environ['SNOWFLAKE_DATABASE'],
+              role=os.environ['SNOWFLAKE_ROLE']
+          )
+          cursor = conn.cursor()
+          schema_name = os.environ['PR_SCHEMA']
+          print(f'Eliminando esquema efímero: {schema_name}')
+          cursor.execute(f'DROP SCHEMA IF EXISTS {schema_name};')
+          conn.close()
+          "
+
+  # 2. Validación en PR abierto/actualizado
+  slim_ci:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install dbt-snowflake sqlfluff sqlfluff-templater-dbt cryptography
+
+      - name: Run SQLFluff Linting
+        run: |
+          sqlfluff lint dbt_project/models --dialect snowflake
+
+      - name: Run dbt Slim CI
+        run: |
+          cd dbt_project
+          dbt seed --target ci--profiles-dir .
+          dbt build --select state:modified+ --target ci --state ./ --profiles-dir .
