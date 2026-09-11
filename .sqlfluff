@@ -1,0 +1,22 @@
+[sqlfluff]
+dialect = snowflake
+templater = dbt
+runaway_limit = 10
+max_line_length = 120
+ignore = parsing,templating
+exclude_rules = layout.spacing,layout.end_of_file,structure.simple_case,references.keywords,structure.column_order
+
+[sqlfluff:templater:dbt]
+project_dir = ./dbt_project
+profiles_dir = ./dbt_project
+profile = dataforge_poc
+target = ci
+
+[sqlfluff:indentation]
+tab_space_size = 4
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:layout.end_of_file]
+# Ignora salto de linea al final del archivo si no quieres ser estricto
