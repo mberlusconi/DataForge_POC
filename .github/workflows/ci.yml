@@ -123,19 +123,19 @@ jobs:
               return `| ${statusEmoji} **${res.status.toUpperCase()}** | \`${nodeType}\` | \`${name}\` | ${time} |`;
             }).join('\n');
 
-            const body = `### 📊 dbt Slim CI - Impacto Semántico del PR
+            const body = `### 📊 dbt Slim CI - PR Semantic Impact Analysis
 
-              | Estado | Tipo de Objeto | Nombre del Modelo / Test | Tiempo de Ejecución |
-              | :---: | :---: | :--- | :---: |
-              ${rows}
+            | Status | Resource Type | Model / Test Name | Execution Time |
+            | :---: | :---: | :--- | :---: |
+            ${rows}
 
-              * **Esquema de prueba evaluado:** \`${process.env.PR_SCHEMA}\`
-              * **Total de recursos procesados:** ${results.length}
-              `;
+            * **Target Test Schema:** \`${process.env.PR_SCHEMA}\`
+            * **Total Resources Processed:** ${results.length}
+            `;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: body
-            });          
+            });
