@@ -10,6 +10,16 @@ __pycache__/
 *terraform/*.tfvars 
 .terraform/
 .terraform.*
+terraform.tfstate.*
 
 #Keys
 *.p8
+
+# Dagster
+dagster_home/
+.orchestrator/__pycache__/
+.orchestrator/.dagster/
+.orchestrator/.tmp*/*
+.tmp_dagster_home_*/
+
+
