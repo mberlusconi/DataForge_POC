@@ -15,7 +15,7 @@ gold_dimension as (
 
         first_name,
         last_name,
-        first_name || '-' || last_name as full_name,
+        first_name || ' ' || last_name as full_name,
         email,
         phone,
         country,
