@@ -137,20 +137,20 @@ jobs:
 
             const body = `### 📊 dbt Slim CI - PR Semantic Impact Analysis
 
-#### ⛓️ Downstream Lineage Impact
-The following models and tests were identified as modified or directly impacted downstream:
-${impactedList || '_No downstream models impacted._'}
+            #### ⛓️ Downstream Lineage Impact
+            The following models and tests were identified as modified or directly impacted downstream:
+            ${impactedList || '_No downstream models impacted._'}
 
----
+            ---
 
-#### 🛠️ Execution Results
-| Status | Resource Type | Model / Test Name | Execution Time |
-| :---: | :---: | :--- | :---: |
-${rows}
+            #### 🛠️ Execution Results
+            | Status | Resource Type | Model / Test Name | Execution Time |
+            | :---: | :---: | :--- | :---: |
+            ${rows}
 
-* **Target Test Schema:** \`${process.env.PR_SCHEMA}\`
-* **Total Resources Processed:** ${results.length}
-`;
+            * **Target Test Schema:** \`${process.env.PR_SCHEMA}\`
+            * **Total Resources Processed:** ${results.length}
+            `;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
