@@ -40,3 +40,39 @@ dataforge_poc:
       database: POC_MEDALLION_CICD
       schema: "{{ env_var('PR_SCHEMA') }}"
       threads: 4
+      
+    # CD - DEV Target (GitHub Actions)
+    cd_dev:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      private_key: "{{ env_var('SNOWFLAKE_PRIVATE_KEY') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+      database: POC_MEDALLION_CICD
+      schema: DEV_SCHEMA
+      threads: 4
+
+    # CD - UAT Target (GitHub Actions)
+    uat:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      private_key: "{{ env_var('SNOWFLAKE_PRIVATE_KEY') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+      database: POC_MEDALLION_CICD
+      schema: UAT_SCHEMA
+      threads: 4
+
+    # CD - PROD Target (GitHub Actions)
+    prod:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      private_key: "{{ env_var('SNOWFLAKE_PRIVATE_KEY') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+      database: POC_MEDALLION_CICD
+      schema: PROD_SCHEMA
+      threads: 4      
