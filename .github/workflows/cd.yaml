@@ -46,7 +46,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install dbt-snowflake cryptography
+          pip install dbt-snowflake cryptography PyGithub
 
       - name: Install dbt Packages
         run: |
@@ -54,9 +54,11 @@ jobs:
           dbt deps --profiles-dir .
 
       - name: Run DEV Build
+        env:
+          SNOWFLAKE_AUTHENTICATOR: JWT
         run: |
           cd dbt_project
-          dbt build --target dev --profiles-dir .
+          dbt build --target cd_dev --profiles-dir .
 
       - name: Upload Production Manifest
         uses: actions/upload-artifact@v4
@@ -93,7 +95,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install dbt-snowflake cryptography
+          pip install dbt-snowflake cryptography PyGithub
 
       - name: Install dbt Packages
         run: |
@@ -133,7 +135,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install dbt-snowflake cryptography
+          pip install dbt-snowflake cryptography PyGithub
 
       - name: Install dbt Packages
         run: |
