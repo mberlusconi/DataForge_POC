@@ -1,0 +1,4 @@
+id,first_name,last_name,email,phone,country
+301,Santiago,Beltran,s.beltran@example.com,555-0192,Argentina
+302,Angel,Correa,a.correa@example.com,555-0193,Argentina
+303,Mauro,Arrambarri,m.arambarri@example.com,555-0194,Uruguay
