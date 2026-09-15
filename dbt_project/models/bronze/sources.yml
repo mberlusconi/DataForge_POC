@@ -3,7 +3,14 @@ version: 2
 sources:
   - name: landing_raw
     database: POC_MEDALLION_CICD
-    schema: BRONZE_DEV
+    schema: >-
+      {%- if target.name == 'uat' -%}
+        BRONZE_UAT
+      {%- elif target.name == 'prod' -%}
+        BRONZE_PROD
+      {%- else -%}
+        BRONZE_DEV
+      {%- endif -%}
     tables:
       - name: raw_customers
         description: "Table or staging of raw clients loaded from landing"

@@ -10,7 +10,7 @@ defs = Definitions(
     resources={
         "dbt": DbtCliResource(
             project_dir=dbt_project,
-            target="dev_jwt",
+            # target="dev_jwt",
         ),
     },        
 )
