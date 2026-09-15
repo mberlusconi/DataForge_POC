@@ -111,17 +111,29 @@ jobs:
         id: dbt_run
         run: |
           cd dbt_project
-          if [ -f "./manifest.json" ]; then
-            echo "Comparison manifest found. Running Slim CI (state:modified+)..."
-            dbt build --select state:modified+ --target ci --state ./ --profiles-dir .
-            echo "IMPACTED_MODELS<<EOF" >> $GITHUB_ENV
-            dbt ls --select state:modified+ --output name --state ./ --profiles-dir . --quiet >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-          else
-            echo "No prior manifest.json found. Executing full build on ephemeral schema..."
-            dbt build --target ci --profiles-dir .
-            echo "IMPACTED_MODELS=Full build executed (no base manifest available for lineage comparison)." >> $GITHUB_ENV
-          fi
+          echo "Executing build on ephemeral schema..."
+          dbt build --target ci --profiles-dir .
+          echo "IMPACTED_MODELS=Build executed on ephemeral PR schema." >> $GITHUB_ENV
+
+      # TODO (branch: slim-ci-fix): resolver state:modified+ real usando --defer
+      # para que los nodos no reconstruidos se lean del manifest de producción,
+      # no del schema efímero de PR. Ver sesión del 2026-09-15.
+
+      # - name: Run dbt Slim CI
+      #   id: dbt_run
+      #   run: |
+      #     cd dbt_project
+      #     if [ -f "./manifest.json" ]; then
+      #       echo "Comparison manifest found. Running Slim CI (state:modified+)..."
+      #       dbt build --select state:modified+ --target ci --state ./ --profiles-dir .
+      #       echo "IMPACTED_MODELS<<EOF" >> $GITHUB_ENV
+      #       dbt ls --select state:modified+ --output name --state ./ --profiles-dir . --quiet >> $GITHUB_ENV
+      #       echo "EOF" >> $GITHUB_ENV
+      #     else
+      #       echo "No prior manifest.json found. Executing full build on ephemeral schema..."
+      #       dbt build --target ci --profiles-dir .
+      #       echo "IMPACTED_MODELS=Full build executed (no base manifest available for lineage comparison)." >> $GITHUB_ENV
+      #     fi
 
       - name: Post PR Comment with Semantic Impact
         if: always() && github.event_name == 'pull_request'
