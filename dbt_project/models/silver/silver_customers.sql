@@ -13,7 +13,7 @@ cleaned_and_typed as (
         
         trim(first_name) as first_name,
         trim(last_name) as last_name,
-        lower(trim(email)) as email,
+        upper(trim(email)) as email,
         
         coalesce(trim(phone), 'N/A') as phone,
         upper(coalesce(trim(country), 'UNKNOWN')) as country,
