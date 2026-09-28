@@ -21,9 +21,8 @@
 │   │   └── definitions.py    
 │   ├── pyproject.toml
 │   └── README.md    
-├── dagster/                # Proyecto de Dagster (Fase 3)
-├── dbt_project/            # Proyecto de dbt Core (Fase 2)
-└── terraform/              # Infraestructura como Código (Fase 1)
+├── dbt_project/            # dbt Core (Fase 2)
+└── terraform/              # Infraestructure (Fase 1)
     ├── main.tf
     ├── variables.tf
     ├── terraform.tfvars
